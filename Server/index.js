@@ -2,7 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require('cors');
 const bodyParser = require("body-parser");
-const { PORT, } = require("./Config/serverConfig");
+const { PORT, CONNECTION_URL, HOST} = require("./Config/serverConfig");
 const userRouter = require("./Routes/userRoutes");
 const driverRouter = require("./Routes/driverRoutes");
 
@@ -17,16 +17,17 @@ app.use(bodyParser.json());
 app.use("/api/user/", userRouter);
 app.use("/api/driver/", driverRouter);
 
-mongoose.connect("mongodb://localhost:27017/dunzo", {
+mongoose.connect(`${CONNECTION_URL}/dunzo`, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
+
 mongoose.connection.on(
   "error",
   console.error.bind(console, "MongoDB connection error:")
 );
 
 
-app.listen(PORT, () => {
+app.listen(PORT, HOST, () => {
   console.log("Server started!!!");
 });
