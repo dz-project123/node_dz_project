@@ -1,0 +1,27 @@
+
+
+Things to do 
+* Add email field in users table
+* Refactor code - Done
+* Refactor api's - done
+* Fix jwt verify method problem -
+
+
+Things done
+* Added user model
+* login api
+* sign up api
+* list users api
+* authentication middleware
+
+
+Get the next set of requirements
+
+20/01/2024
+* Create seperate table for driver - Mongo - Done
+* Create seperate sign up for driver - Api's for driver - Login, Signup
+* Client
+    * Setup - Done
+    * Login page
+    * Signup page
+    * Home page
