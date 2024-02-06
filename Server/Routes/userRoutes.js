@@ -12,7 +12,7 @@ userRouter.get("/greet", (req, res) => {
 });
 
 // Get all users route
-userRouter.get("/users", async (req, res) => {
+userRouter.get("/", async (req, res) => {
   try {
     let users = await User.find();
     res.status(200).json({ users: users });
@@ -24,13 +24,15 @@ userRouter.get("/users", async (req, res) => {
 // Signup route
 userRouter.post("/signup/", async (req, res) => {
   try {
-    const { firstName, lastName, password, email, contact } = req.body;
+    const { firstName, lastName, password, email, contact, pincode, address } = req.body;
     const hashedPassword = await bcrypt.hash(password, SALT);
     let newUser = new User({
       firstName,
       lastName,
       email,
       contact,
+      pincode,
+      address,
       password: hashedPassword,
     });
     let doc = await newUser.save();
@@ -70,7 +72,7 @@ userRouter.post("/login/", async (req, res) => {
     const token = jwt.sign({ userId: user._id }, SECRETKEY, {
       expiresIn: "1h",
     });
-    res.status(200).json({ token });
+    res.status(200).json({ token, user });
   } catch (error) {
     res.status(500).json({ error: "Login failed" });
   }

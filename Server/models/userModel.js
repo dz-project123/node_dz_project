@@ -5,19 +5,24 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const userSchema = new Schema({
-  firstName: { type: String, require: true },
-  lastName: { type: String, require: true },
+  firstName: { type: String, required: true },
+  lastName: { type: String, required: true },
   password: { type: String, required: true },
   email: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
   },
   contact: {
     type: Number,
-    unique : true,
+    unique: true,
     required: true,
   },
+  pincode: {
+    type: Number,
+    required: true,
+  },
+  address: { type: String, required: true },
 });
 
 const User = mongoose.model("User", userSchema);

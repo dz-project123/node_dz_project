@@ -5,8 +5,9 @@ const bodyParser = require("body-parser");
 const { PORT, CONNECTION_URL, HOST} = require("./Config/serverConfig");
 const userRouter = require("./Routes/userRoutes");
 const driverRouter = require("./Routes/driverRoutes");
-
 const app = express();
+
+app.use(express.static("Server/public"));
 
 app.use(cors());
 // Common middlewares

@@ -5,8 +5,8 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const driverSchema = new Schema({
-  firstName: { type: String, require: true },
-  lastName: { type: String, require: true },
+  firstName: { type: String, required: true },
+  lastName: { type: String, required: true },
   password: { type: String, required: true },
   email: {
     type: String,
@@ -53,4 +53,4 @@ const driverSchema = new Schema({
 
 const Driver = mongoose.model("Driver", driverSchema);
 
-module.exports = { Driver }
+module.exports = { Driver };

@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node Server/index.js"
+    "start": "node Server/index.js",
+    "devserver" : "nodemon server/index.js",
+    "client" : "cd ./client && npm run start"
   },
   "author": "",
   "license": "ISC",
