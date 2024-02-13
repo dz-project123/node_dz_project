@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const { PORT, CONNECTION_URL, HOST} = require("./Config/serverConfig");
 const userRouter = require("./Routes/userRoutes");
 const driverRouter = require("./Routes/driverRoutes");
+const receiverRouter = require("./Routes/receiverRoutes");
 const app = express();
 
 app.use(express.static("Server/public"));
@@ -17,6 +18,7 @@ app.use(bodyParser.json());
 // User route middleware
 app.use("/api/user/", userRouter);
 app.use("/api/driver/", driverRouter);
+app.use("/api/receiver/", receiverRouter);
 
 mongoose.connect(`${CONNECTION_URL}/dunzo`, {
   useNewUrlParser: true,

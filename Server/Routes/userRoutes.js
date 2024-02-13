@@ -12,7 +12,7 @@ userRouter.get("/greet", (req, res) => {
 });
 
 // Get all users route
-userRouter.get("/", async (req, res) => {
+userRouter.get("/", verifyToken, async (req, res) => {
   try {
     let users = await User.find();
     res.status(200).json({ users: users });
@@ -70,7 +70,7 @@ userRouter.post("/login/", async (req, res) => {
       return res.status(401).json({ error: "Authentication failed" });
     }
     const token = jwt.sign({ userId: user._id }, SECRETKEY, {
-      expiresIn: "1h",
+      expiresIn: "1d",
     });
     res.status(200).json({ token, user });
   } catch (error) {

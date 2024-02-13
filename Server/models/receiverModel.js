@@ -15,7 +15,10 @@ const receiverSchema = new Schema({
     type: Number,
     required: true,
   },
-  address: { type: String, required: true },
+  address: {
+    type: Object, // Assuming your JSON data is an object
+    required: true,
+  },
   building: { type: String, required: true },
   userId: { type: String, required: true },
 });
