@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.973d2e45.css",
-    "main.js": "/static/js/main.d189d73f.js",
+    "main.js": "/static/js/main.bde3f8d3.js",
     "static/js/787.d5fa4d18.chunk.js": "/static/js/787.d5fa4d18.chunk.js",
     "static/media/pickup-truck.png": "/static/media/pickup-truck.68e1cac65f432f7b3953.png",
     "static/media/car.png": "/static/media/car.d91d4d0ecc9cdc496aaf.png",
@@ -10,11 +10,11 @@
     "static/media/delivery-truck.png": "/static/media/delivery-truck.bd950fdf9045eb1c95ab.png",
     "index.html": "/index.html",
     "main.973d2e45.css.map": "/static/css/main.973d2e45.css.map",
-    "main.d189d73f.js.map": "/static/js/main.d189d73f.js.map",
+    "main.bde3f8d3.js.map": "/static/js/main.bde3f8d3.js.map",
     "787.d5fa4d18.chunk.js.map": "/static/js/787.d5fa4d18.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.973d2e45.css",
-    "static/js/main.d189d73f.js"
+    "static/js/main.bde3f8d3.js"
   ]
 }
