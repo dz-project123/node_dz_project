@@ -13,35 +13,35 @@ const driverSchema = new Schema({
     required: true,
     unique: true,
   },
-  phoneNumber: {
+  contact: {
     type: Number,
     unique: true,
     required: true,
   },
   address: {
-    current: { type: String, required: true },
-    pincode: {
-      type: Number,
-      required: true,
-    },
+    type: Object, // Assuming your JSON data is an object
+    required: true,
   },
   license: {
-    number: { type: String, required: true },
-    type: { type: String, required: true },
-    issuingAuthority: { type: String, required: true },
-    expirationDate: { type: Date, required: true },
+    number: { type: String},
+    expirationDate: { type: Date},
   },
   availability: {
-    status: String,
-    lastOnline: Date,
+    status: { type: String },
+    lastOnline: { type: Date },
   },
-  vehichle: {
-    registrationNumber: { type: String, required: true },
-    type: { type: String, required: true },
-    insurance: {
-      provider: { type: String, required: true },
-      expirationDate: { type: Date, required: true },
-    },
+  currentLocation : {
+    lat: { type: Number },
+    lng: { type: Number },
+    geoHash: { type: String },
+  },
+  vehicle: {
+    registrationNumber: { type: String},
+    type: { type: String},
+    // insurance: {
+    //   provider: { type: String},
+    //   expirationDate: { type: Date, required: true }
+    // },
   },
   ratings: {
     averageRating: Number,

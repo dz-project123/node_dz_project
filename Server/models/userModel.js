@@ -26,11 +26,11 @@ const userSchema = new Schema({
     type: Object, // Assuming your JSON data is an object
     required: true,
   },
-  // address: {
-  //   title: { type: String, required: true },
-  //   lattitude: { type: Number, required: true },
-  //   longitude: { type: Number, required: true },
-  // },
+  currentLocation: {
+    lat: { type: Number },
+    lng: { type: Number },
+    geoHash: { type: String },
+  },
 });
 
 const User = mongoose.model("User", userSchema);

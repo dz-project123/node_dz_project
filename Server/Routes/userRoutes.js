@@ -24,7 +24,16 @@ userRouter.get("/", verifyToken, async (req, res) => {
 // Signup route
 userRouter.post("/signup/", async (req, res) => {
   try {
-    const { firstName, lastName, password, email, contact, pincode, address } = req.body;
+    const {
+      firstName,
+      lastName,
+      password,
+      email,
+      contact,
+      pincode,
+      address,
+      currentLocation = {},
+    } = req.body;
     const hashedPassword = await bcrypt.hash(password, SALT);
     let newUser = new User({
       firstName,
@@ -34,6 +43,7 @@ userRouter.post("/signup/", async (req, res) => {
       pincode,
       address,
       password: hashedPassword,
+      currentLocation,
     });
     let doc = await newUser.save();
     res.status(201).json({ message: "New user created!", doc: doc });
@@ -72,7 +82,8 @@ userRouter.post("/login/", async (req, res) => {
     const token = jwt.sign({ userId: user._id }, SECRETKEY, {
       expiresIn: "1d",
     });
-    res.status(200).json({ token, user });
+    const rideRates = {walking:2.5,bicycle:1.5,delivery_car:1.27,pickup_truck:1.8}  ///per km cost
+    res.status(200).json({ token, user,rideRates });
   } catch (error) {
     res.status(500).json({ error: "Login failed" });
   }

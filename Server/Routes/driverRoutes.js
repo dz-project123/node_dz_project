@@ -5,41 +5,43 @@ const driverRouter = express.Router();
 const verifyToken = require("../Middleware/authMiddleware");
 const { SECRETKEY, SALT } = require("../Config/serverConfig");
 const { Driver } = require("../models/driverModel");
-
 // Signup route
 driverRouter.post("/signup/", async (req, res) => {
-  console.log("inside route");
   try {
     const {
-      firstname,
-      lastname,
+      firstName,
+      lastName,
       password,
       email,
-      phoneNumber,
+      contact,
       address = {},
-      license = {},
-      vehichle = {},
+      license = {
+        number: "",
+        expirationDate: "",
+      },
+      vehicle = {
+        type: "",
+        registrationNumber: "",
+      },
+      currentLocation = {
+        lat: "",
+        lng: "",
+        geoHash: "",
+      },
     } = req.body;
-    console.log("license", license);
-    let newLicense = {
-      ...license,
-      expirationDate: new Date(license.expirationDate),
-    };
-    let newVehicle = {
-      ...vehichle,
-      expirationDate: new Date(license.expirationDate),
-    };
-    console.log("Licence details", newLicense);
+    console.log("REQUEST BODY", req.body);
+
     const hashedPassword = await bcrypt.hash(password, SALT);
     let newDriver = new Driver({
-      firstname,
-      lastname,
+      firstName,
+      lastName,
       password: hashedPassword,
       email,
-      phoneNumber,
+      contact,
       address,
-      license: newLicense,
-      vehichle: newVehicle,
+      license,
+      vehicle,
+      currentLocation,
     });
     let doc = await newDriver.save();
     res.status(201).json({ messsage: "New driver added successfully", doc });
@@ -53,21 +55,25 @@ driverRouter.post("/signup/", async (req, res) => {
 driverRouter.post("/login/", async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await Driver.findOne({ email });
-    if (!user) {
+    const driver = await Driver.findOne({ email });
+    if (!driver) {
       return res.status(401).json({ error: "Authentication failed" });
     }
     // const passwordMatch = password === user.password;
-    const passwordMatch = bcrypt.compare(user.password, password);
+    const passwordMatch = bcrypt.compare(driver.password, password);
 
     if (!passwordMatch) {
       return res.status(401).json({ error: "Authentication failed" });
     }
-    const token = jwt.sign({ userId: user._id }, SECRETKEY, {
-      expiresIn: "1h",
+    const token = jwt.sign({ userId: driver._id }, SECRETKEY, {
+      expiresIn: "1d",
     });
-    res.status(200).json({ token });
+
+    req.io.sockets.in(driver.email).emit('new_msg', {msg: 'hello'});
+    //
+    res.status(200).json({ token, driver });
   } catch (error) {
+    console.log("error",error);
     res.status(500).json({ error: "Login failed" });
   }
 });
