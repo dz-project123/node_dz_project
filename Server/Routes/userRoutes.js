@@ -4,6 +4,8 @@ const bcrypt = require("bcrypt");
 const userRouter = express.Router();
 const verifyToken = require("../Middleware/authMiddleware");
 const { User } = require("../models/userModel");
+const { Order } = require("../models/ordersModel");
+const { Receiver } = require("../models/receiverModel");
 const { SECRETKEY, SALT } = require("../Config/serverConfig");
 
 // Testing route
@@ -82,8 +84,13 @@ userRouter.post("/login/", async (req, res) => {
     const token = jwt.sign({ userId: user._id }, SECRETKEY, {
       expiresIn: "1d",
     });
-    const rideRates = {walking:2.5,bicycle:1.5,delivery_car:1.27,pickup_truck:1.8}  ///per km cost
-    res.status(200).json({ token, user,rideRates });
+    const rideRates = {
+      walking: 2.5,
+      bicycle: 1.5,
+      delivery_car: 1.27,
+      pickup_truck: 1.8,
+    }; ///per km cost
+    res.status(200).json({ token, user, rideRates });
   } catch (error) {
     res.status(500).json({ error: "Login failed" });
   }
@@ -91,5 +98,30 @@ userRouter.post("/login/", async (req, res) => {
 
 // Pending route
 // update user
+
+userRouter.get("/get-order/:userId", async (req, res) => {
+  try {
+    let orders = await Order.find({
+      userId: req.params.userId,
+      orderStatus: "BOOKING_COMPLETED",
+    })
+      .populate("userId")
+      .populate("receiverId");
+
+    let currentOrders = await Order.find({
+      userId: req.params.userId,
+      orderStatus: { $nin: ["BOOKING_COMPLETED", "BOOKING_CANCELLED"] },
+    })
+      .populate("userId")
+      .populate("receiverId");
+
+    // if (orders.length <= 0) {
+    //   res.status(404).json("Orders not found");
+    // }
+    res.status(200).json({ orders: orders, currentOrders: currentOrders });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error", error: error });
+  }
+});
 
 module.exports = userRouter;

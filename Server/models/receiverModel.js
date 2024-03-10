@@ -23,6 +23,6 @@ const receiverSchema = new Schema({
   userId: { type: String, required: true }
 });
 
-const receiver = mongoose.model("Receiver", receiverSchema);
+const Receiver = mongoose.model("Receiver", receiverSchema);
 
-module.exports = { receiver };
+module.exports = { Receiver };

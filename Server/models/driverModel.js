@@ -23,21 +23,18 @@ const driverSchema = new Schema({
     required: true,
   },
   license: {
-    number: { type: String},
-    expirationDate: { type: Date},
+    number: { type: String },
+    expirationDate: { type: Date },
   },
-  availability: {
-    status: { type: String },
-    lastOnline: { type: Date },
-  },
-  currentLocation : {
+  availability: { type: Boolean },
+  currentLocation: {
     lat: { type: Number },
     lng: { type: Number },
     geoHash: { type: String },
   },
   vehicle: {
-    registrationNumber: { type: String},
-    type: { type: String},
+    registrationNumber: { type: String },
+    type: { type: String },
     // insurance: {
     //   provider: { type: String},
     //   expirationDate: { type: Date, required: true }

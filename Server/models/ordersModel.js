@@ -18,10 +18,24 @@ const orderSchema = new Schema(
       type: Object, // Assuming your JSON data is an object
       required: true,
     },
-    receiverId: { type: String, required: true },
-    userId: { type: String, required: true },
-    driverId: { type: String}, 
-    orderStatus: { type: String, required: true },
+    // receiverId: { type: String, required: true },
+    // userId: { type: String, required: true },
+    receiverId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Receiver",
+      required: true,
+    },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    driverId: { type: String },
+    // orderStatus: { type: String, required: true },
+    orderStatus: { type: [String], required: true },
+    senderOtp: {type: Number},
+    receiverOtp: {type: Number},
+    isReceiverOtpRequired: {type: Boolean,default: false}
   },
   { timestamps: true }
 );
