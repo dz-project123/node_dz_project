@@ -71,11 +71,11 @@ driverRouter.post("/login/", async (req, res) => {
       expiresIn: "1d",
     });
 
-    req.io.sockets.in(driver.email).emit("new_msg", { msg: "hello" });
+    // req.io.sockets.in(driver.email).emit("new_msg", { msg: "hello" });
     //
     res.status(200).json({ token, driver });
   } catch (error) {
-    res.status(500).json({ message: "Login failed", error : error });
+    res.status(500).json({ message: "Login failed", error: error });
   }
 });
 
@@ -90,12 +90,12 @@ driverRouter.get("/get-order/:driverId", async (req, res) => {
       .populate("receiverId");
 
     if (orders.length <= 0) {
-      res.status(404).json("Orders not found");
+      return res.status(404).json("Orders not found");
     }
-    res.status(200).json({ orders: orders });
+    return res.status(200).json({ orders: orders });
   } catch (error) {
     console.log("Error", error);
-    res.status(500).json("Internal server error");
+    return res.status(500).json("Internal server error");
   }
 });
 
