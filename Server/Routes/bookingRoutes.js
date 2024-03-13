@@ -20,9 +20,9 @@ bookingRouter.post("/create/", verifyToken, async (req, res) => {
       orderStatus,
       receiverId,
       userId,
+      vehicleType
     } = req.body;
     // Add order entry
-
     //
     let senderOtp = otpGenerator.generate(6, {
       digits: true,
@@ -48,11 +48,14 @@ bookingRouter.post("/create/", verifyToken, async (req, res) => {
     // Finding drivers in users geohash cell
     let drivers = await Driver.find({
       "currentLocation.geoHash": userObj.currentLocation.geoHash,
+      // "vehicle.type" : String(vehicleType)
     });
+
+    console.log("drivers", drivers);
 
     let neighbouringDrivers = [];
     let neighb = Geohash.neighbours(userObj.currentLocation.geoHash);
-
+    console.log("neighbours",neighb);
     if (drivers.length <= 3) {
       // Check drivers in neighbouring cells
       neighbouringDrivers = await Driver.find({
@@ -60,6 +63,7 @@ bookingRouter.post("/create/", verifyToken, async (req, res) => {
           $in: Object.values(
             Geohash.neighbours(userObj.currentLocation.geoHash)
           ),
+          // "vehicle.type" : String(vehicleType)
         },
       });
     }
@@ -86,7 +90,8 @@ bookingRouter.get("/user/check-orders-status", async (req, res) => {
     let order = await Order.findById({
       _id: orderId,
     });
-    if (order && order.driverId === driverId) {
+    console.log("driver_id ",order.driverId?._id,driverId)
+    if (order && order.driverId?._id == driverId) {
       let orderStatusLen = order.orderStatus.length;
       if (order.orderStatus[orderStatusLen - 1] == "BOOKING_ACCEPTED") {
         res.status(200).json({
@@ -196,7 +201,7 @@ bookingRouter.post("/driver/reject-order/", async (req, res) => {
   try {
     const { driverId, request_status, orderId } = req.body;
     let order = await Order.findById({ _id: orderId });
-    order.driverId = "";
+    order.driverId = null;
     await order.save();
 
     res.status(200).json({
@@ -215,14 +220,16 @@ bookingRouter.get("/driver/check-orders", async (req, res) => {
   try {
     const { driverId } = req.query;
     let order = await Order.find({
-      driverId: driverId,
+      driverId: mongoose.Types.ObjectId(driverId),
       orderStatus: { $nin: ["BOOKING_ACCEPTED", "BOOKING_COMPLETED"] },
-    });
+    })
+    .populate("userId")
+    .populate("receiverId");;
 
     // Checking current rider for driver
     // REQUESTED, ACCEPTED but NOT COMPLETED
     let currentRides = await Order.find({
-      driverId: driverId,
+      driverId: mongoose.Types.ObjectId(driverId),
       orderStatus: { $nin: ["BOOKING_COMPLETED"], $in: ["BOOKING_ACCEPTED"] },
     })
       .populate("userId")
@@ -281,7 +288,7 @@ bookingRouter.post("/cancel/", async (req, res) => {
 
     let order = await Order.findById({ _id: orderId });
     order.orderStatus = "BOOKING_CANCELLED";
-    order.driverId = "";
+    order.driverId = null;
     await order.save();
 
     res.status(200).json({

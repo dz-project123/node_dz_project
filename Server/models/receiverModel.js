@@ -13,7 +13,7 @@ const receiverSchema = new Schema({
   },
   pincode: {
     type: Number,
-    required: true,
+    // required: true,
   },
   address: {
     type: Object, // Assuming your JSON data is an object

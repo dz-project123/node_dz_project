@@ -106,15 +106,16 @@ userRouter.get("/get-order/:userId", async (req, res) => {
       orderStatus: "BOOKING_COMPLETED",
     })
       .populate("userId")
-      .populate("receiverId");
+      .populate("receiverId")
+      .populate("driverId");
 
     let currentOrders = await Order.find({
       userId: req.params.userId,
       orderStatus: { $nin: ["BOOKING_COMPLETED", "BOOKING_CANCELLED"] },
     })
       .populate("userId")
-      .populate("receiverId");
-
+      .populate("receiverId")
+      .populate("driverId");
     // if (orders.length <= 0) {
     //   res.status(404).json("Orders not found");
     // }

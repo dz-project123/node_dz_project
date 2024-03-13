@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.bc165c3a.css",
-    "main.js": "/static/js/main.e1d2d198.js",
+    "main.js": "/static/js/main.fa88a277.js",
     "static/js/787.d5fa4d18.chunk.js": "/static/js/787.d5fa4d18.chunk.js",
     "static/media/can-deliver-v2.png": "/static/media/can-deliver-v2.544a40559c75f3e23023.png",
     "static/media/pickup-truck.png": "/static/media/pickup-truck.68e1cac65f432f7b3953.png",
@@ -11,11 +11,11 @@
     "static/media/delivery-truck.png": "/static/media/delivery-truck.bd950fdf9045eb1c95ab.png",
     "index.html": "/index.html",
     "main.bc165c3a.css.map": "/static/css/main.bc165c3a.css.map",
-    "main.e1d2d198.js.map": "/static/js/main.e1d2d198.js.map",
+    "main.fa88a277.js.map": "/static/js/main.fa88a277.js.map",
     "787.d5fa4d18.chunk.js.map": "/static/js/787.d5fa4d18.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.bc165c3a.css",
-    "static/js/main.e1d2d198.js"
+    "static/js/main.fa88a277.js"
   ]
 }

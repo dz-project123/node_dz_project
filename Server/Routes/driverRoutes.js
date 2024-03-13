@@ -1,5 +1,6 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
+const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const driverRouter = express.Router();
 const verifyToken = require("../Middleware/authMiddleware");
@@ -83,7 +84,7 @@ driverRouter.post("/login/", async (req, res) => {
 driverRouter.get("/get-order/:driverId", async (req, res) => {
   try {
     let orders = await Order.find({
-      driverId: req.params.driverId,
+      driverId: mongoose.Types.ObjectId(req.params.driverId),
       orderStatus: "BOOKING_COMPLETED",
     })
       .populate("userId")

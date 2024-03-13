@@ -30,7 +30,11 @@ const orderSchema = new Schema(
       ref: "User",
       required: true,
     },
-    driverId: { type: String },
+    //Ghansham Change
+    driverId: { type: mongoose.Schema.Types.ObjectId,
+      ref: "Driver",
+     // required: true 
+    },
     // orderStatus: { type: String, required: true },
     orderStatus: { type: [String], required: true },
     senderOtp: {type: Number},
