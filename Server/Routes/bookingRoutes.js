@@ -23,7 +23,6 @@ bookingRouter.post("/create/", verifyToken, async (req, res) => {
       vehicleType
     } = req.body;
     // Add order entry
-    //
     let senderOtp = otpGenerator.generate(6, {
       digits: true,
       lowerCaseAlphabets: false,
@@ -47,24 +46,23 @@ bookingRouter.post("/create/", verifyToken, async (req, res) => {
     let userObj = await User.findOne({ _id: userId });
     // Finding drivers in users geohash cell
     let drivers = await Driver.find({
-      "currentLocation.geoHash": userObj.currentLocation.geoHash,
-      // "vehicle.type" : String(vehicleType)
+      'currentLocation.geoHash': userObj.currentLocation.geoHash,
+      'vehicle.type' : vehicleType
     });
 
     console.log("drivers", drivers);
-
     let neighbouringDrivers = [];
     let neighb = Geohash.neighbours(userObj.currentLocation.geoHash);
     console.log("neighbours",neighb);
     if (drivers.length <= 3) {
       // Check drivers in neighbouring cells
       neighbouringDrivers = await Driver.find({
-        "currentLocation.geoHash": {
+        'currentLocation.geoHash': {
           $in: Object.values(
             Geohash.neighbours(userObj.currentLocation.geoHash)
-          ),
-          // "vehicle.type" : String(vehicleType)
+          )
         },
+        'vehicle.type' : vehicleType  
       });
     }
     console.log("neighbouringDrivers", neighbouringDrivers);
@@ -306,6 +304,8 @@ bookingRouter.post("/driver/accept/package/", async (req, res) => {
     const { orderId, driverOtp } = req.body;
     let order = await Order.findById({ _id: orderId });
     if (order && order.senderOtp === Number(driverOtp)) {
+      order.orderStatus.push("OTP_VERIFIED");
+      await order.save();
       res.status(200).json({ message: "otp verified", verified: true });
     } else {
       res.status(500).json({ message: "otp did not matched", verified: false });

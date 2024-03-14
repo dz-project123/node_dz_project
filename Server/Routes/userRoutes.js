@@ -112,6 +112,8 @@ userRouter.get("/get-order/:userId", async (req, res) => {
     let currentOrders = await Order.find({
       userId: req.params.userId,
       orderStatus: { $nin: ["BOOKING_COMPLETED", "BOOKING_CANCELLED"] },
+      // Check the following filter with ghansham
+      driverId : { $exists : true } 
     })
       .populate("userId")
       .populate("receiverId")
