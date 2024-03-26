@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.7d50bd10.css",
-    "main.js": "/static/js/main.88cea458.js",
+    "main.css": "/static/css/main.3b9b2a5b.css",
+    "main.js": "/static/js/main.21d7efa7.js",
     "static/js/787.d5fa4d18.chunk.js": "/static/js/787.d5fa4d18.chunk.js",
     "static/media/can-deliver-v2.png": "/static/media/can-deliver-v2.544a40559c75f3e23023.png",
     "static/media/pickup-truck.png": "/static/media/pickup-truck.68e1cac65f432f7b3953.png",
@@ -10,12 +10,12 @@
     "static/media/delivery-bike.png": "/static/media/delivery-bike.dccfe10cedb865f67bde.png",
     "static/media/delivery-truck.png": "/static/media/delivery-truck.bd950fdf9045eb1c95ab.png",
     "index.html": "/index.html",
-    "main.7d50bd10.css.map": "/static/css/main.7d50bd10.css.map",
-    "main.88cea458.js.map": "/static/js/main.88cea458.js.map",
+    "main.3b9b2a5b.css.map": "/static/css/main.3b9b2a5b.css.map",
+    "main.21d7efa7.js.map": "/static/js/main.21d7efa7.js.map",
     "787.d5fa4d18.chunk.js.map": "/static/js/787.d5fa4d18.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.7d50bd10.css",
-    "static/js/main.88cea458.js"
+    "static/css/main.3b9b2a5b.css",
+    "static/js/main.21d7efa7.js"
   ]
 }

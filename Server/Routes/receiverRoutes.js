@@ -23,7 +23,10 @@ receiverRouter.get("/:userId", async (req, res) => {
     if (recieverFound.length <= 0) {
       res.status(404).json("Recievers not found");
     }
-    res.status(200).json({ recievers: recieverFound });
+    else{
+      res.status(200).json({ recievers: recieverFound });
+    }
+    
   } catch (error) {
     console.log("Error", error);
     res.status(500).json("Internal server error");

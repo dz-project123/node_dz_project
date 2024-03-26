@@ -9,6 +9,7 @@ const otpGenerator = require("otp-generator");
 // import Geohash from "latlon-geohash";
 const Geohash = require("latlon-geohash");
 const { Receiver } = require("../models/receiverModel");
+const { CommunityRide } = require("../models/communityRide");
 
 // Signup route
 bookingRouter.post("/create/", verifyToken, async (req, res) => {
@@ -20,7 +21,8 @@ bookingRouter.post("/create/", verifyToken, async (req, res) => {
       orderStatus,
       receiverId,
       userId,
-      vehicleType
+      vehicleType,
+      metaData
     } = req.body;
     // Add order entry
     let senderOtp = otpGenerator.generate(6, {
@@ -39,6 +41,7 @@ bookingRouter.post("/create/", verifyToken, async (req, res) => {
       receiverId,
       userId,
       senderOtp,
+      metaData
     });
 
     let order = await newOrder.save();
@@ -219,7 +222,7 @@ bookingRouter.get("/driver/check-orders", async (req, res) => {
     const { driverId } = req.query;
     let order = await Order.find({
       driverId: mongoose.Types.ObjectId(driverId),
-      orderStatus: { $nin: ["BOOKING_ACCEPTED", "BOOKING_COMPLETED"] },
+      orderStatus: { $nin: ["BOOKING_ACCEPTED", "BOOKING_COMPLETED","USER_CANCELLED"] },
     })
     .populate("userId")
     .populate("receiverId");;
@@ -228,7 +231,7 @@ bookingRouter.get("/driver/check-orders", async (req, res) => {
     // REQUESTED, ACCEPTED but NOT COMPLETED
     let currentRides = await Order.find({
       driverId: mongoose.Types.ObjectId(driverId),
-      orderStatus: { $nin: ["BOOKING_COMPLETED"], $in: ["BOOKING_ACCEPTED"] },
+      orderStatus: { $nin: ["BOOKING_COMPLETED","USER_CANCELLED"], $in: ["BOOKING_ACCEPTED"] },
     })
       .populate("userId")
       .populate("receiverId");
@@ -285,7 +288,12 @@ bookingRouter.post("/cancel/", async (req, res) => {
     const { orderId } = req.body;
 
     let order = await Order.findById({ _id: orderId });
-    order.orderStatus = "BOOKING_CANCELLED";
+    if(order.isCommunityRide == true)
+    {
+      order.orderStatus = "BOOKING_CANCELLED";
+    } 
+    else 
+      order.orderStatus = "BOOKING_CANCELLED";
     order.driverId = null;
     await order.save();
 
@@ -311,6 +319,41 @@ bookingRouter.post("/driver/accept/package/", async (req, res) => {
       res.status(500).json({ message: "otp did not matched", verified: false });
     }
   } catch (error) {
+    res.status(500).json({ message: "Internal server error", error: error });
+  }
+});
+//// update rating
+bookingRouter.get("/orders/rateDriver", async (req, res) => {
+  try {
+    const { orderId,rating } = req.query;
+    let order = await Order.findById({
+      _id: orderId,
+    });
+    order.driverRating = parseInt(rating);
+    order.isUserRatingAvailable = true;
+    await order.save();
+    res.status(200).json({
+      message: "driver rating updated",
+      order: order,
+    });
+    
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error", error: error });
+  }
+});
+bookingRouter.get("/update/", async (req, res) => {
+  try {
+    const { orderId,field,value } = req.query;
+
+    let order = await Order.findById({ _id: orderId });
+    order[field] = value 
+    await order.save();
+
+    res.status(200).json({
+      message: "Order updated",
+    });
+  } catch (error) {
+    console.log("Error while updating booking", error);
     res.status(500).json({ message: "Internal server error", error: error });
   }
 });

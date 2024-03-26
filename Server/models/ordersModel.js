@@ -39,7 +39,20 @@ const orderSchema = new Schema(
     orderStatus: { type: [String], required: true },
     senderOtp: {type: Number},
     receiverOtp: {type: Number},
-    isReceiverOtpRequired: {type: Boolean,default: false}
+    isReceiverOtpRequired: {type: Boolean,default: false},
+    metaData: {
+      type: Object,
+      required: false
+    },
+    userRating:{type: Number},
+    driverRating:{type: Number},
+    isUserRatingAvailable: {type: Boolean,default: false},
+    isDriverRatingAvailable: {type: Boolean,default: false},
+    isCommunityRide: {type: Boolean , required: false,default: false},
+    communityRide: { type: mongoose.Schema.Types.ObjectId,
+      ref: "CommunityRide",
+    },
+    userCanCancel:{type:Boolean,default:true},
   },
   { timestamps: true }
 );

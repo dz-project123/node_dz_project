@@ -62,9 +62,8 @@ driverRouter.post("/login/", async (req, res) => {
     if (!driver) {
       return res.status(401).json({ error: "Authentication failed" });
     }
-    // const passwordMatch = password === user.password;
-    const passwordMatch = bcrypt.compare(driver.password, password);
-
+    const passwordMatch = await bcrypt.compare(password,driver.password);
+    console.log("driver password matching",passwordMatch,driver.password,password)
     if (!passwordMatch) {
       return res.status(401).json({ error: "Authentication failed" });
     }

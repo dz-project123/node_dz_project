@@ -31,6 +31,8 @@ const userSchema = new Schema({
     lng: { type: Number },
     geoHash: { type: String },
   },
+  forgotPasswordOtp: { type: Number,required:false}
+  
 });
 
 const User = mongoose.model("User", userSchema);
