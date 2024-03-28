@@ -1,21 +1,31 @@
 {
   "files": {
-    "main.css": "/static/css/main.3b9b2a5b.css",
-    "main.js": "/static/js/main.21d7efa7.js",
+    "main.css": "/static/css/main.1ef5adf9.css",
+    "main.js": "/static/js/main.06c85211.js",
     "static/js/787.d5fa4d18.chunk.js": "/static/js/787.d5fa4d18.chunk.js",
     "static/media/can-deliver-v2.png": "/static/media/can-deliver-v2.544a40559c75f3e23023.png",
+    "static/media/1Ptsg8zYS_SKggPNyCg4TYFqL_KWxQ.woff2": "/static/media/1Ptsg8zYS_SKggPNyCg4TYFqL_KWxQ.3dbb947f6ff54d6040fd.woff2",
+    "static/media/1Ptug8zYS_SKggPNyC0IT4ttDfA.woff2": "/static/media/1Ptug8zYS_SKggPNyC0IT4ttDfA.2acc0728e72cf00d6b68.woff2",
+    "static/media/1Ptsg8zYS_SKggPNyCg4Q4FqL_KWxWMT.woff2": "/static/media/1Ptsg8zYS_SKggPNyCg4Q4FqL_KWxWMT.6d541a37bd3ca022fb95.woff2",
+    "static/media/1Ptug8zYS_SKggPNyCMIT4ttDfCmxA.woff2": "/static/media/1Ptug8zYS_SKggPNyCMIT4ttDfCmxA.58f616dbb7f64bd4e53f.woff2",
+    "static/media/1Ptsg8zYS_SKggPNyCg4QIFqL_KWxWMT.woff2": "/static/media/1Ptsg8zYS_SKggPNyCg4QIFqL_KWxWMT.58622edd442260434593.woff2",
     "static/media/pickup-truck.png": "/static/media/pickup-truck.68e1cac65f432f7b3953.png",
     "static/media/car.png": "/static/media/car.d91d4d0ecc9cdc496aaf.png",
+    "static/media/1Ptug8zYS_SKggPNyCAIT4ttDfCmxA.woff2": "/static/media/1Ptug8zYS_SKggPNyCAIT4ttDfCmxA.f027bef1e7215587f682.woff2",
+    "static/media/1Ptsg8zYS_SKggPNyCg4SYFqL_KWxWMT.woff2": "/static/media/1Ptsg8zYS_SKggPNyCg4SYFqL_KWxWMT.5e9b887f7e106d12f8c8.woff2",
+    "static/media/1Ptug8zYS_SKggPNyCkIT4ttDfCmxA.woff2": "/static/media/1Ptug8zYS_SKggPNyCkIT4ttDfCmxA.5092383afc766238d9f3.woff2",
     "static/media/delivery-man.png": "/static/media/delivery-man.cef3ed3a9331c0f49cef.png",
     "static/media/delivery-bike.png": "/static/media/delivery-bike.dccfe10cedb865f67bde.png",
     "static/media/delivery-truck.png": "/static/media/delivery-truck.bd950fdf9045eb1c95ab.png",
+    "static/media/1Ptsg8zYS_SKggPNyCg4QoFqL_KWxWMT.woff2": "/static/media/1Ptsg8zYS_SKggPNyCg4QoFqL_KWxWMT.aedde5cc52f2cd27fc0b.woff2",
+    "static/media/1Ptug8zYS_SKggPNyCIIT4ttDfCmxA.woff2": "/static/media/1Ptug8zYS_SKggPNyCIIT4ttDfCmxA.4e4beaf2e5a4e18a39a3.woff2",
     "index.html": "/index.html",
-    "main.3b9b2a5b.css.map": "/static/css/main.3b9b2a5b.css.map",
-    "main.21d7efa7.js.map": "/static/js/main.21d7efa7.js.map",
+    "main.1ef5adf9.css.map": "/static/css/main.1ef5adf9.css.map",
+    "main.06c85211.js.map": "/static/js/main.06c85211.js.map",
     "787.d5fa4d18.chunk.js.map": "/static/js/787.d5fa4d18.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.3b9b2a5b.css",
-    "static/js/main.21d7efa7.js"
+    "static/css/main.1ef5adf9.css",
+    "static/js/main.06c85211.js"
   ]
 }
