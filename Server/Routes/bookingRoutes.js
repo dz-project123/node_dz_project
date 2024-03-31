@@ -235,6 +235,8 @@ bookingRouter.get("/driver/check-orders", async (req, res) => {
     })
       .populate("userId")
       .populate("receiverId");
+      let earnings = await getDriverEarning(driverId);
+      let communityEarnings = await getDriverEarningCommunity(driverId);
 
     if (
       order &&
@@ -248,6 +250,8 @@ bookingRouter.get("/driver/check-orders", async (req, res) => {
         order: order[order.length - 1],
         showCard: true,
         currentRides: currentRides,
+        earnings,
+        communityEarnings
       });
     } else {
       res.status(200).json({
@@ -255,6 +259,8 @@ bookingRouter.get("/driver/check-orders", async (req, res) => {
         order: {},
         showCard: false,
         currentRides: currentRides,
+        earnings,
+        communityEarnings
       });
     }
   } catch (error) {
@@ -341,6 +347,24 @@ bookingRouter.get("/orders/rateDriver", async (req, res) => {
     res.status(500).json({ message: "Internal server error", error: error });
   }
 });
+bookingRouter.get("/orders/rateUser", async (req, res) => {
+  try {
+    const { orderId,rating } = req.query;
+    let order = await Order.findById({
+      _id: orderId,
+    });
+    order.userRating = parseInt(rating);
+    order.isDriverRatingAvailable = true;
+    await order.save();
+    res.status(200).json({
+      message: "user rating updated",
+      order: order,
+    });
+    
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error", error: error });
+  }
+});
 bookingRouter.get("/update/", async (req, res) => {
   try {
     const { orderId,field,value } = req.query;
@@ -357,5 +381,130 @@ bookingRouter.get("/update/", async (req, res) => {
     res.status(500).json({ message: "Internal server error", error: error });
   }
 });
+const getDriverEarning =async function(driverId)
+{
+  let monthly = await Order.aggregate([ 
+    { $match: 
+      { 
+        driverId: mongoose.Types.ObjectId(driverId) ,
+        orderStatus: {$in: ["BOOKING_COMPLETED"]},
+        isCommunityRide: false,
+      }  
+    }, 
+    {
+      $group: 
+      {  _id: 
+        { year: { $year: "$createdAt" }, month: { $month: "$createdAt" } 
+        },         
+        total_cost_month: { $sum: "$orderPrice" }     
+      } 
+    } ]);
+  let yearly = await Order.aggregate([ 
+    { $match: 
+      { 
+        driverId: mongoose.Types.ObjectId(driverId),
+        orderStatus: {$in: ["BOOKING_COMPLETED"]},
+        isCommunityRide: false, 
+      }  
+    }, 
+    {
+      $group: 
+      {  _id: 
+        { year: { $year: "$createdAt" },
+        },         
+        total_cost_yearly: { $sum: "$orderPrice" }     
+      } 
+    } ]);
+    let weekly = await Order.aggregate([ 
+      { $match: 
+        { 
+          driverId: mongoose.Types.ObjectId(driverId),
+          orderStatus: {$in: ["BOOKING_COMPLETED"]},
+          isCommunityRide: false,  
+        }  
+      }, 
+      {
+        $group: 
+        {  _id: 
+          { year: { $year: "$updatedAt" }, month: { $month: "$updatedAt" } , week: {$week: "$updatedAt"}
+          },         
+          total_cost_weekly: { $sum: "$orderPrice" }     
+        } 
+      } ]);
+      console.log(monthly,{
+        month: monthly[0]?.total_cost_month,
+        yearly: yearly[0]?.total_cost_yearly,
+        weekly: weekly[0]
+      })
+      return {
+        month: monthly[0]?.total_cost_month,
+        yearly: yearly[0]?.total_cost_yearly,
+        weekly: weekly[0]?.total_cost_weekly
+      }
+      
+}
+
+const getDriverEarningCommunity =async function(driverId)
+{
+  let monthly = await Order.aggregate([ 
+    { $match: 
+      { 
+        driverId: mongoose.Types.ObjectId(driverId) ,
+        orderStatus: {$in: ["BOOKING_COMPLETED"]},
+        isCommunityRide: true,
+      }  
+    }, 
+    {
+      $group: 
+      {  _id: 
+        { year: { $year: "$createdAt" }, month: { $month: "$createdAt" } 
+        },         
+        total_cost_month: { $sum: "$metaData.communityOrderPrice" }     
+      } 
+    } ]);
+  let yearly = await Order.aggregate([ 
+    { $match: 
+      { 
+        driverId: mongoose.Types.ObjectId(driverId),
+        orderStatus: {$in: ["BOOKING_COMPLETED"]},
+        isCommunityRide: true, 
+      }  
+    }, 
+    {
+      $group: 
+      {  _id: 
+        { year: { $year: "$createdAt" },
+        },         
+        total_cost_yearly: { $sum: "$metaData.communityOrderPrice" }     
+      } 
+    } ]);
+    let weekly = await Order.aggregate([ 
+      { $match: 
+        { 
+          driverId: mongoose.Types.ObjectId(driverId),
+          orderStatus: {$in: ["BOOKING_COMPLETED"]},
+          isCommunityRide: true,  
+        }  
+      }, 
+      {
+        $group: 
+        {  _id: 
+          { year: { $year: "$createdAt" }, month: { $month: "$createdAt" } , week: {$week: "$createdAt"}
+          },         
+          total_cost_weekly: { $sum: "$metaData.communityOrderPrice" }     
+        } 
+      } ]);
+      console.log(monthly,{
+        month: monthly[0]?.total_cost_month,
+        yearly: yearly[0]?.total_cost_yearly,
+        weekly: weekly[0]?.total_cost_weekly
+      })
+      return {
+        month: monthly[0]?.total_cost_month,
+        yearly: yearly[0]?.total_cost_yearly,
+        weekly: weekly[0]?.total_cost_weekly
+      }
+      
+}
 
 module.exports = bookingRouter;

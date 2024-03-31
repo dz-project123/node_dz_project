@@ -70,11 +70,13 @@ driverRouter.post("/login/", async (req, res) => {
     const token = jwt.sign({ userId: driver._id }, SECRETKEY, {
       expiresIn: "1d",
     });
+    
 
     // req.io.sockets.in(driver.email).emit("new_msg", { msg: "hello" });
     //
-    res.status(200).json({ token, driver });
+    res.status(200).json({ token, driver  });
   } catch (error) {
+    console.log(error)
     res.status(500).json({ message: "Login failed", error: error });
   }
 });
@@ -87,16 +89,71 @@ driverRouter.get("/get-order/:driverId", async (req, res) => {
       orderStatus: "BOOKING_COMPLETED",
     })
       .populate("userId")
-      .populate("receiverId");
+      .populate("receiverId")
+      .populate("driverId").sort({_id:-1});
 
     if (orders.length <= 0) {
       return res.status(404).json("Orders not found");
     }
-    return res.status(200).json({ orders: orders });
+   
+    return res.status(200).json({ orders: orders});
   } catch (error) {
     console.log("Error", error);
     return res.status(500).json("Internal server error");
   }
 });
+function getDriverEarningCommunity(driverId)
+{
+  let monthly = db.orders.aggregate([ 
+    { $match: 
+      { 
+        driverId: ObjectId(driverId) ,
+        isCommunityRide: true
+      }  
+    }, 
+    {
+      $group: 
+      {  _id: 
+        { year: { $year: "$createdAt" }, month: { $month: "$createdAt" } 
+        },         
+        total_cost_month: { $sum: "$orderPrice" }     
+      } 
+    } ]);
+  let yearly = db.orders.aggregate([ 
+    { $match: 
+      { 
+        driverId: ObjectId(driverId),
+        isCommunityRide: true 
+      }  
+    }, 
+    {
+      $group: 
+      {  _id: 
+        { year: { $year: "$createdAt" },
+        },         
+        total_cost_yearly: { $sum: "$orderPrice" }     
+      } 
+    } ]);
+    let weekly = db.orders.aggregate([ 
+      { $match: 
+        { 
+          driverId: ObjectId(driverId),
+          isCommunityRide: true,
+        }  
+      }, 
+      {
+        $group: 
+        {  _id: 
+          { year: { $year: "$createdAt" }, month: { $month: "$createdAt" } , week: {$week: "$createdAt"}
+          },         
+          total_cost_weekly: { $sum: "$orderPrice" }     
+        } 
+      } ]);
 
+      return {
+        month: monthly.total_cost_month,
+        yearly: yearly.total_cost_yearly,
+        weekly: weekly.total_cost_weekly
+      }
+}
 module.exports = driverRouter;

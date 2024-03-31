@@ -37,7 +37,7 @@ helpDeskRouter.post("/create", async (req, res) => {
         caseStatus:"CREATED"
       });
       let doc = await newCase.save();
-      sendEmail(userEmail,"[New Ticket] - Order Id - "+orderId+" "+subject,
+      sendEmail(email,"[New Ticket] - Order Id - "+orderId+" "+subject,
       "Thanks for contacting us with below query, we will reach out to you shortly\n\nQuery - "+message)
       res.status(201).json({ message: "New case created!", doc: doc });
     } catch (error) {
