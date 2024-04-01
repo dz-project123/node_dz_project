@@ -58,18 +58,22 @@ userRouter.post("/signup/", async (req, res) => {
 });
 
 // Update route
-// userRouter.post("/update/", async (req, res) => {
-//   try {
-//     const { name, username, password, email } = req.body;
-//     const hashedPassword = await bcrypt.hash(password, SALT);
-//     let user = await User.find({username});
-//     user.up
-//     let doc = await newUser.save();
-//     res.status(201).json({ message: "New user created!", doc: doc });
-//   } catch (error) {
-//     res.status(500).json({ message: "Internal server error", error: error });
-//   }
-// });
+userRouter.post("/update/", async (req, res) => {
+  try {
+    const { userId, firstName, lastName, address, currentLocation } = req.body;
+    console.log("called api");
+    let user = await User.findById({ _id: userId });
+    console.log("user", user)
+    user.firstName = firstName;
+    user.lastName = lastName;
+    user.address = address;
+    user.currentLocation = currentLocation;
+    await user.save();
+    res.status(200).json({ message: "User profile updated", doc: user });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error", error: error });
+  }
+});
 
 // Login route
 userRouter.post("/login/", async (req, res) => {
@@ -110,11 +114,14 @@ userRouter.get("/get-order/:userId", async (req, res) => {
     })
       .populate("userId")
       .populate("receiverId")
-      .populate("driverId").sort({_id:-1});
+      .populate("driverId")
+      .sort({ _id: -1 });
 
     let currentOrders = await Order.find({
       userId: req.params.userId,
-      orderStatus: { $nin: ["BOOKING_COMPLETED", "BOOKING_CANCELLED","USER_CANCELLED"] },
+      orderStatus: {
+        $nin: ["BOOKING_COMPLETED", "BOOKING_CANCELLED", "USER_CANCELLED"],
+      },
       // Check the following filter with ghansham
       driverId: { $exists: true },
     })
@@ -129,6 +136,7 @@ userRouter.get("/get-order/:userId", async (req, res) => {
     res.status(500).json({ message: "Internal server error", error: error });
   }
 });
+
 userRouter.post("/update-password/otp", async (req, res) => {
   try {
     const { email, userType } = req.body;
@@ -195,4 +203,5 @@ userRouter.post("/update-password/verify-otp", async (req, res) => {
     res.status(500).json({ message: "Something went wrong", error: error });
   }
 });
+
 module.exports = userRouter;
