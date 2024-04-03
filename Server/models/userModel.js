@@ -26,12 +26,17 @@ const userSchema = new Schema({
     type: Object, // Assuming your JSON data is an object
     required: true,
   },
+
   currentLocation: {
     lat: { type: Number },
     lng: { type: Number },
     geoHash: { type: String },
   },
-  forgotPasswordOtp: { type: Number,required:false}
+  forgotPasswordOtp: { type: Number,required:false},
+  creditCard:{
+    type: Object,
+    required: false
+  }
   
 });
 

@@ -46,7 +46,11 @@ const driverSchema = new Schema({
       { user: String, comment: String, rating: Number, timestamp: Date },
     ],
   },
-  forgotPasswordOtp: { type: Number,required:false}
+  forgotPasswordOtp: { type: Number,required:false},
+  bankDetails:{
+    type: Object,
+    required: false
+  }
 });
 
 const Driver = mongoose.model("Driver", driverSchema);

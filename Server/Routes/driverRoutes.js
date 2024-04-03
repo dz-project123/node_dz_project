@@ -18,6 +18,7 @@ driverRouter.post("/signup/", async (req, res) => {
       email,
       contact,
       address = {},
+      bankDetails,
       license = {
         number: "",
         expirationDate: "",
@@ -45,6 +46,7 @@ driverRouter.post("/signup/", async (req, res) => {
       license,
       vehicle,
       currentLocation,
+      bankDetails
     });
     let doc = await newDriver.save();
     res.status(201).json({ messsage: "New driver added successfully", doc });

@@ -38,6 +38,7 @@ userRouter.post("/signup/", async (req, res) => {
       pincode,
       address,
       currentLocation = {},
+      creditCard = {}
     } = req.body;
     const hashedPassword = await bcrypt.hash(password, SALT);
     let newUser = new User({
@@ -49,6 +50,7 @@ userRouter.post("/signup/", async (req, res) => {
       address,
       password: hashedPassword,
       currentLocation,
+      creditCard
     });
     let doc = await newUser.save();
     res.status(201).json({ message: "New user created!", doc: doc });

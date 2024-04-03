@@ -10,6 +10,7 @@ const otpGenerator = require("otp-generator");
 const Geohash = require("latlon-geohash");
 const { Receiver } = require("../models/receiverModel");
 const { CommunityRide } = require("../models/communityRide");
+const { sendEmail,ride_complete_email_template } = require("../utils/email");
 
 // Signup route
 bookingRouter.post("/create/", verifyToken, async (req, res) => {
@@ -274,10 +275,25 @@ bookingRouter.get("/driver/check-orders", async (req, res) => {
 bookingRouter.post("/driver/complete-booking/", async (req, res) => {
   try {
     const { driverId, orderId } = req.body;
-    let order = await Order.findById({ _id: orderId });
+    let order = await Order.findById({ _id: orderId }).populate('userId').populate('driverId').populate('receiverId');
     order.orderStatus.push("BOOKING_COMPLETED");
+    
+    ride = {
+      orderId : order._id,
+      from : order.receiverId.address.title,
+      to : order.userId.address.title,
+      registrationNumber: order.driverId.vehicle.registrationNumber,
+      vehicleType: order.driverId.vehicle.type,
+      orderPrice: order.orderPrice
+    }
+    console.log("to email ",order.userId.email,new Date().toLocaleDateString())
+    let date = new Date().toLocaleDateString()
+    sendEmail(
+      order.userId.email,
+      "Your Package Delivery with CanDeliver - "+ date ,'',
+      ride_complete_email_template(ride)
+    );
     await order.save();
-
     res.status(200).json({
       message: "Order complete",
       status: "BOOKING_COMPLETED",
