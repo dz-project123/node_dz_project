@@ -77,7 +77,7 @@ cron.schedule("*/59 * * * * *", async function () {
       {
           rideStatus: {$in:["CREATED"]},
           rideStartDateTime: {$lte: new Date().toISOString()},
-          rideStatus: {$nin:["EXPIRED"]},
+          rideStatus: {$nin:["EXPIRED","BOOKED"]},
       },
       { $set: { rideStatus: ["CREATED","EXPIRED"] }},
   );

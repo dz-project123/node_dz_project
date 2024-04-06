@@ -36,6 +36,16 @@ const userSchema = new Schema({
   creditCard:{
     type: Object,
     required: false
+  },
+  ratingSum: {
+    type: Number,
+    required: false,
+    default: 0
+  },
+  ratingCount:{
+    type: Number,
+    required: false,
+    default: 0
   }
   
 });

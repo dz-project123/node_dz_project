@@ -53,6 +53,7 @@ const orderSchema = new Schema(
       ref: "CommunityRide",
     },
     userCanCancel:{type:Boolean,default:true},
+    isVerified: {type:Boolean,default:false},
   },
   { timestamps: true }
 );

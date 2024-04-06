@@ -62,7 +62,7 @@ userRouter.post("/signup/", async (req, res) => {
 // Update route
 userRouter.post("/update/", async (req, res) => {
   try {
-    const { userId, firstName, lastName, address, currentLocation } = req.body;
+    const { userId, firstName, lastName, address, currentLocation,creditCard } = req.body;
     console.log("called api");
     let user = await User.findById({ _id: userId });
     console.log("user", user)
@@ -70,6 +70,7 @@ userRouter.post("/update/", async (req, res) => {
     user.lastName = lastName;
     user.address = address;
     user.currentLocation = currentLocation;
+    user.creditCard = creditCard;
     await user.save();
     res.status(200).json({ message: "User profile updated", doc: user });
   } catch (error) {
@@ -133,7 +134,8 @@ userRouter.get("/get-order/:userId", async (req, res) => {
     // if (orders.length <= 0) {
     //   res.status(404).json("Orders not found");
     // }
-    res.status(200).json({ orders: orders, currentOrders: currentOrders });
+    let user = await User.findById({ _id: req.params.userId });
+    res.status(200).json({ orders: orders, currentOrders: currentOrders,user});
   } catch (error) {
     res.status(500).json({ message: "Internal server error", error: error });
   }

@@ -6,11 +6,12 @@ const { User } = require("../models/userModel");
 const { Order } = require("../models/ordersModel");
 const { Driver } = require("../models/driverModel");
 const otpGenerator = require("otp-generator");
+const moment = require('moment');
 // import Geohash from "latlon-geohash";
 const Geohash = require("latlon-geohash");
 const { Receiver } = require("../models/receiverModel");
 const { CommunityRide } = require("../models/communityRide");
-const { sendEmail,ride_complete_email_template } = require("../utils/email");
+const { sendEmail,ride_complete_email_template,VEHICAL_IMAGE_MAPPING } = require("../utils/email");
 
 // Signup route
 bookingRouter.post("/create/", verifyToken, async (req, res) => {
@@ -238,7 +239,7 @@ bookingRouter.get("/driver/check-orders", async (req, res) => {
       .populate("receiverId");
       let earnings = await getDriverEarning(driverId);
       let communityEarnings = await getDriverEarningCommunity(driverId);
-
+      const driver = await Driver.findOne({ _id:driverId });
     if (
       order &&
       order.length > 0 &&
@@ -252,7 +253,8 @@ bookingRouter.get("/driver/check-orders", async (req, res) => {
         showCard: true,
         currentRides: currentRides,
         earnings,
-        communityEarnings
+        communityEarnings,
+        driver
       });
     } else {
       res.status(200).json({
@@ -261,7 +263,8 @@ bookingRouter.get("/driver/check-orders", async (req, res) => {
         showCard: false,
         currentRides: currentRides,
         earnings,
-        communityEarnings
+        communityEarnings,
+        driver
       });
     }
   } catch (error) {
@@ -283,17 +286,18 @@ bookingRouter.post("/driver/complete-booking/", async (req, res) => {
       from : order.receiverId.address.title,
       to : order.userId.address.title,
       registrationNumber: order.driverId.vehicle.registrationNumber,
-      vehicleType: order.driverId.vehicle.type,
-      orderPrice: order.orderPrice
+      vehicleType: VEHICAL_IMAGE_MAPPING[order.driverId.vehicle.type] || order.driverId.vehicle.type,
+      orderPrice: order.isCommunityRide?order.metaData.communityOrderPrice:order.orderPrice
     }
     console.log("to email ",order.userId.email,new Date().toLocaleDateString())
+    await order.save();
     let date = new Date().toLocaleDateString()
     sendEmail(
       order.userId.email,
       "Your Package Delivery with CanDeliver - "+ date ,'',
       ride_complete_email_template(ride)
     );
-    await order.save();
+    
     res.status(200).json({
       message: "Order complete",
       status: "BOOKING_COMPLETED",
@@ -334,11 +338,12 @@ bookingRouter.post("/driver/accept/package/", async (req, res) => {
     const { orderId, driverOtp } = req.body;
     let order = await Order.findById({ _id: orderId });
     if (order && order.senderOtp === Number(driverOtp)) {
+      order.isVerified = true;
       order.orderStatus.push("OTP_VERIFIED");
       await order.save();
-      res.status(200).json({ message: "otp verified", verified: true });
+      res.status(200).json({ message: "otp verified", verified: true,order });
     } else {
-      res.status(500).json({ message: "otp did not matched", verified: false });
+      res.status(500).json({ message: "otp did not matched", verified: false,order });
     }
   } catch (error) {
     res.status(500).json({ message: "Internal server error", error: error });
@@ -346,6 +351,7 @@ bookingRouter.post("/driver/accept/package/", async (req, res) => {
 });
 //// update rating
 bookingRouter.get("/orders/rateDriver", async (req, res) => {
+  let driver = {};
   try {
     const { orderId,rating } = req.query;
     let order = await Order.findById({
@@ -354,16 +360,24 @@ bookingRouter.get("/orders/rateDriver", async (req, res) => {
     order.driverRating = parseInt(rating);
     order.isUserRatingAvailable = true;
     await order.save();
+    let driver = await Driver.findById({
+      _id: order.driverId
+    });
+    driver.ratingSum = (driver?.ratingSum || 0) + parseInt(rating);
+    driver.ratingCount = (driver?.ratingCount || 0) + 1;
+    await driver.save();
     res.status(200).json({
       message: "driver rating updated",
       order: order,
     });
     
   } catch (error) {
+    console.log(error,driver)
     res.status(500).json({ message: "Internal server error", error: error });
   }
 });
 bookingRouter.get("/orders/rateUser", async (req, res) => {
+  let user = {}
   try {
     const { orderId,rating } = req.query;
     let order = await Order.findById({
@@ -372,12 +386,19 @@ bookingRouter.get("/orders/rateUser", async (req, res) => {
     order.userRating = parseInt(rating);
     order.isDriverRatingAvailable = true;
     await order.save();
+    let user = await User.findById({
+      _id: order.userId
+    });
+    user.ratingSum = (user?.ratingSum || 0) + parseInt(rating);
+    user.ratingCount = (user?.ratingCount || 0) + 1;
+    await user.save();
     res.status(200).json({
       message: "user rating updated",
       order: order,
     });
     
   } catch (error) {
+    console.log(error,user)
     res.status(500).json({ message: "Internal server error", error: error });
   }
 });
@@ -399,18 +420,24 @@ bookingRouter.get("/update/", async (req, res) => {
 });
 const getDriverEarning =async function(driverId)
 {
+const startOfCurrentMonth = new Date();
+startOfCurrentMonth.setDate(1);
   let monthly = await Order.aggregate([ 
     { $match: 
       { 
         driverId: mongoose.Types.ObjectId(driverId) ,
         orderStatus: {$in: ["BOOKING_COMPLETED"]},
         isCommunityRide: false,
+        createdAt: {
+          $gte: startOfCurrentMonth,
+      }
+
       }  
     }, 
     {
       $group: 
       {  _id: 
-        { year: { $year: "$createdAt" }, month: { $month: "$createdAt" } 
+        { year: { $year: "$createdAt" }, month: { $month: "$updatedAt" } 
         },         
         total_cost_month: { $sum: "$orderPrice" }     
       } 
@@ -436,7 +463,10 @@ const getDriverEarning =async function(driverId)
         { 
           driverId: mongoose.Types.ObjectId(driverId),
           orderStatus: {$in: ["BOOKING_COMPLETED"]},
-          isCommunityRide: false,  
+          isCommunityRide: false,
+          createdAt:{
+            $gte: startOfWeek(new Date())
+          }  
         }  
       }, 
       {
@@ -447,11 +477,7 @@ const getDriverEarning =async function(driverId)
           total_cost_weekly: { $sum: "$orderPrice" }     
         } 
       } ]);
-      console.log(monthly,{
-        month: monthly[0]?.total_cost_month,
-        yearly: yearly[0]?.total_cost_yearly,
-        weekly: weekly[0]
-      })
+      
       return {
         month: monthly[0]?.total_cost_month,
         yearly: yearly[0]?.total_cost_yearly,
@@ -462,12 +488,17 @@ const getDriverEarning =async function(driverId)
 
 const getDriverEarningCommunity =async function(driverId)
 {
+  const startOfCurrentMonth = new Date();
+  startOfCurrentMonth.setDate(1);
   let monthly = await Order.aggregate([ 
     { $match: 
       { 
         driverId: mongoose.Types.ObjectId(driverId) ,
         orderStatus: {$in: ["BOOKING_COMPLETED"]},
         isCommunityRide: true,
+        createdAt: {
+          $gte: startOfCurrentMonth,
+      }
       }  
     }, 
     {
@@ -500,6 +531,9 @@ const getDriverEarningCommunity =async function(driverId)
           driverId: mongoose.Types.ObjectId(driverId),
           orderStatus: {$in: ["BOOKING_COMPLETED"]},
           isCommunityRide: true,  
+          createdAt:{
+            $gte: startOfWeek(new Date())
+          }  
         }  
       }, 
       {
@@ -521,6 +555,14 @@ const getDriverEarningCommunity =async function(driverId)
         weekly: weekly[0]?.total_cost_weekly
       }
       
+}
+function startOfWeek(date)
+{
+  // Calculate the difference between the date's day of the month and its day of the week
+  var diff = date.getDate() - date.getDay() + (date.getDay() === 0 ? -6 : 1);
+
+  // Set the date to the start of the week by setting it to the calculated difference
+  return new Date(date.setDate(diff));
 }
 
 module.exports = bookingRouter;

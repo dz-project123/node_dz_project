@@ -18,7 +18,7 @@ const { SECRETKEY, SALT } = require("../Config/serverConfig");
 // Get all users route
 communityRideRouter.get("/ride/:driverId", verifyToken, async (req, res) => {
   try {
-    let rides = await CommunityRide.find({ driverId: req.params.driverId });
+    let rides = await CommunityRide.find({ driverId: req.params.driverId }).sort({'createdAt':-1});
     res.status(200).json({ rides: rides });
   } catch (error) {
     res.status(500).json("Internal server error");
@@ -132,23 +132,28 @@ communityRideRouter.post("/create/", async (req, res) => {
     receiverNeighbour.push(receiverHash);
     console.log('source',senderNeighbour,"destination",receiverNeighbour);
     // waypoint match
-    let wayPointDestination = await CommunityRide.find({ $or:[{
+    let wayPointDestination = await CommunityRide.find({$and:[{ $or:[{
         "source.currentLocation.geoHash": {
             $in: senderNeighbour,
-          },
-          wayPoints: {
-            $in: receiverNeighbour
           }
        },
        {
         wayPoints: {
-            $in: senderNeighbour
-        },  
+          $in: senderNeighbour
+        }
+       }]}
+       ,
+      { $or:[
+       {
+        wayPoints: {
+            $in: receiverNeighbour
+        }
+      },{  
         "destination.currentLocation.geoHash":  {
             $in: receiverNeighbour,
         }
        }
-    ]
+    ]}]
       ,
       rideStatus : { $nin: ["BOOKED","EXPIRED"] } ,
       "vehicleType": vehicleType,

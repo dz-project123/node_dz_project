@@ -97,8 +97,8 @@ driverRouter.get("/get-order/:driverId", async (req, res) => {
     if (orders.length <= 0) {
       return res.status(404).json("Orders not found");
     }
-   
-    return res.status(200).json({ orders: orders});
+    const driver = await Driver.findOne({ _id: req.params.driverId });
+    return res.status(200).json({ orders: orders,driver});
   } catch (error) {
     console.log("Error", error);
     return res.status(500).json("Internal server error");

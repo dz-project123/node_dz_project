@@ -130,7 +130,12 @@ const ride_complete_email_template = (order) =>{ return `<!DOCTYPE html>
   </div>
 </body>
 </html>`}
+ const VEHICAL_IMAGE_MAPPING = {
+  "walking" : "Delivery Man",
+  "bicycle" : "Delivery Moped",
+  "delivery_car" : "Delivery Car",
+  "pickup_truck" : "Delivery Truck"
+}
 
 
-
-module.exports = { sendEmail,ride_complete_email_template};
+module.exports = { sendEmail,ride_complete_email_template,VEHICAL_IMAGE_MAPPING};
