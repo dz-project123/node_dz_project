@@ -52,7 +52,8 @@ bookingRouter.post("/create/", verifyToken, async (req, res) => {
     // Finding drivers in users geohash cell
     let drivers = await Driver.find({
       'currentLocation.geoHash': userObj.currentLocation.geoHash,
-      'vehicle.type' : vehicleType
+      'vehicle.type' : vehicleType,
+      'isOnline': true,
     });
 
     console.log("drivers", drivers);
@@ -67,6 +68,7 @@ bookingRouter.post("/create/", verifyToken, async (req, res) => {
             Geohash.neighbours(userObj.currentLocation.geoHash)
           )
         },
+        'isOnline': true,
         'vehicle.type' : vehicleType  
       });
     }
@@ -464,8 +466,8 @@ startOfCurrentMonth.setDate(1);
           driverId: mongoose.Types.ObjectId(driverId),
           orderStatus: {$in: ["BOOKING_COMPLETED"]},
           isCommunityRide: false,
-          createdAt:{
-            $gte: startOfWeek(new Date())
+          updatedAt:{
+            $gte: startOfWeek(new Date(new Date().toLocaleDateString()))
           }  
         }  
       }, 
@@ -477,7 +479,7 @@ startOfCurrentMonth.setDate(1);
           total_cost_weekly: { $sum: "$orderPrice" }     
         } 
       } ]);
-      
+      console.log(new Date(new Date().toLocaleDateString())+"T00:00:00")
       return {
         month: monthly[0]?.total_cost_month,
         yearly: yearly[0]?.total_cost_yearly,
@@ -544,11 +546,7 @@ const getDriverEarningCommunity =async function(driverId)
           total_cost_weekly: { $sum: "$metaData.communityOrderPrice" }     
         } 
       } ]);
-      console.log(monthly,{
-        month: monthly[0]?.total_cost_month,
-        yearly: yearly[0]?.total_cost_yearly,
-        weekly: weekly[0]?.total_cost_weekly
-      })
+
       return {
         month: monthly[0]?.total_cost_month,
         yearly: yearly[0]?.total_cost_yearly,

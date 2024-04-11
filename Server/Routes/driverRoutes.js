@@ -66,6 +66,8 @@ driverRouter.post("/login/", async (req, res) => {
     }
     const passwordMatch = await bcrypt.compare(password,driver.password);
     console.log("driver password matching",passwordMatch,driver.password,password)
+    driver.isOnline = true;
+    await driver.save();
     if (!passwordMatch) {
       return res.status(401).json({ error: "Authentication failed" });
     }
@@ -104,6 +106,21 @@ driverRouter.get("/get-order/:driverId", async (req, res) => {
     return res.status(500).json("Internal server error");
   }
 });
+
+driverRouter.get("/offline/:driverId", async (req, res) => {
+  try {
+    const {isOnline=true} = req.query;
+    const driver = await Driver.findOneAndUpdate({_id:req.params.driverId}, {isOnline: isOnline}, {
+      new: true
+    });
+    console.log(driver)
+    return res.status(200).json({driver});
+  } catch (error) {
+    console.log("Error", error);
+    return res.status(200).json("Internal server error");
+  }
+});
+
 function getDriverEarningCommunity(driverId)
 {
   let monthly = db.orders.aggregate([ 

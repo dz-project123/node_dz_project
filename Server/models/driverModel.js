@@ -60,7 +60,8 @@ const driverSchema = new Schema({
     type: Number,
     required: false,
     default: 0
-  }
+  },
+  isOnline:{ type: Boolean , required: false }
 });
 
 const Driver = mongoose.model("Driver", driverSchema);
